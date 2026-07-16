@@ -35,6 +35,7 @@ Set-ItemProperty -Path $BlocklistPath -Name "1" -Value "chrome://extensions"
 Set-ItemProperty -Path $BlocklistPath -Name "2" -Value "chrome://flags"
 Set-ItemProperty -Path $BlocklistPath -Name "3" -Value "chrome://settings/reset"
 
-Write-Host "✅ LabLock policies applied successfully." -ForegroundColor Green
+Write-Host "[OK] LabLock policies applied successfully." -ForegroundColor Green
 Write-Host "   Extension ID: $ExtensionId" -ForegroundColor Cyan
-Write-Host "   Restart Chrome to apply changes." -ForegroundColor Yellow
+Write-Host "   [WARN] Restart Chrome to apply changes." -ForegroundColor Yellow
+
