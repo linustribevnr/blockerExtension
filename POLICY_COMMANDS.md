@@ -12,8 +12,8 @@ This guide contains the quick-reference PowerShell commands to **enforce** or **
 Run the following script to force-install the extension and restrict access to Chrome settings, Developer Tools, and Incognito Mode.
 
 ```powershell
-# 1. Define variables (Replace with your actual Extension ID)
-$ExtensionId = "YOUR_EXTENSION_ID"
+# 1. Define variables (Configured for your self-hosted extension)
+$ExtensionId = "ihkppjjhcdojeoepbnekmboabjemjilk"
 $ChromePolicyPath = "HKLM:\SOFTWARE\Policies\Google\Chrome"
 $ForcelistPath = "$ChromePolicyPath\ExtensionInstallForcelist"
 $BlocklistPath = "$ChromePolicyPath\URLBlocklist"
@@ -23,8 +23,8 @@ New-Item -Path $ChromePolicyPath -Force | Out-Null
 New-Item -Path $ForcelistPath -Force | Out-Null
 New-Item -Path $BlocklistPath -Force | Out-Null
 
-# 3. Apply enforcement settings
-Set-ItemProperty -Path $ForcelistPath -Name "1" -Value "$ExtensionId;https://clients2.google.com/service/update2/crx"
+# 3. Apply enforcement settings (pointing to your GitHub Pages update.xml)
+Set-ItemProperty -Path $ForcelistPath -Name "1" -Value "$ExtensionId;https://linustribevnr.github.io/blockerExtension/update.xml"
 Set-ItemProperty -Path $ChromePolicyPath -Name "DeveloperToolsAvailability" -Value 2 -Type DWord
 Set-ItemProperty -Path $ChromePolicyPath -Name "IncognitoModeAvailability" -Value 1 -Type DWord
 Set-ItemProperty -Path $ChromePolicyPath -Name "BrowserGuestModeEnabled" -Value 0 -Type DWord
