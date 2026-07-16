@@ -19,9 +19,10 @@ try {
         Write-Output "[INFO] Created key: $BlocklistPath"
     }
 
-    # Disable Developer Tools (2 = Never allow)
-    Set-ItemProperty -Path $ChromePolicyPath -Name "DeveloperToolsAvailability" -Value 2 -Type DWord
-    Write-Output "[INFO] Disabled Developer Tools (DeveloperToolsAvailability = 2)"
+    # Disable Developer Tools (Commented out for testing unpacked extensions)
+    # If DeveloperToolsAvailability is set to 2, Chrome disables Developer Mode, which unloads unpacked extensions.
+    # Set-ItemProperty -Path $ChromePolicyPath -Name "DeveloperToolsAvailability" -Value 2 -Type DWord
+    # Write-Output "[INFO] Disabled Developer Tools (DeveloperToolsAvailability = 2)"
 
     # Disable Incognito Mode (1 = Disabled)
     Set-ItemProperty -Path $ChromePolicyPath -Name "IncognitoModeAvailability" -Value 1 -Type DWord
