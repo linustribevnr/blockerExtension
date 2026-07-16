@@ -110,7 +110,7 @@ export default function Setup() {
 
   return (
     <div className="setup-page">
-      <div className="container container--narrow">
+      <main id="main-content" className="container container--narrow">
         {/* Progress Steps */}
         <div className="setup-steps">
           {(['welcome', 'password', 'whitelist', 'recovery', 'activate'] as Step[]).map(
@@ -371,7 +371,7 @@ export default function Setup() {
             </p>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

@@ -29,7 +29,7 @@ export default function Blocked() {
 
   return (
     <div className="blocked-page">
-      <div className="container container--narrow animate-in">
+      <main id="main-content" className="container container--narrow animate-in">
         <div className="blocked-icon">🔒</div>
         <h1>Access Restricted</h1>
         <p className="mt-4">
@@ -44,7 +44,7 @@ export default function Blocked() {
           LabLock is enforcing site restrictions for this session.
           Contact your lab administrator if you believe this is an error.
         </p>
-      </div>
+      </main>
     </div>
   );
 }

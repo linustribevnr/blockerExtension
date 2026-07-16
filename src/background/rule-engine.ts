@@ -94,6 +94,17 @@ export async function compileDynamicRules(
     },
   });
 
+  // Rule: Allow Cloudflare Turnstile CAPTCHA (subresources + sub_frame) globally
+  addRules.push({
+    id: RULE_ID.CLOUDFLARE_TURNSTILE,
+    priority: 10,
+    action: { type: 'allow' as chrome.declarativeNetRequest.RuleActionType },
+    condition: {
+      requestDomains: ['challenges.cloudflare.com'],
+      resourceTypes: ALL_RESOURCE_TYPES,
+    },
+  });
+
   // Rule: Redirect main_frame requests that would be blocked to blocked.html
   // This must have a higher priority than block_all (priority 1) but lower
   // than allow rules (priority 2). Using priority 1 with redirect action —
@@ -120,13 +131,27 @@ export async function compileDynamicRules(
 
   // Whitelist allow rules (priority 2 — overrides block_all at priority 1)
   whitelist.forEach((entry, index) => {
+    // Rule A: Allow direct requests/navigation to the whitelisted domain itself
     addRules.push({
-      id: RULE_ID.WHITELIST_START + index,
+      id: RULE_ID.WHITELIST_START + index * 2,
       priority: 2,
       action: { type: 'allow' as chrome.declarativeNetRequest.RuleActionType },
       condition: {
         requestDomains: [entry.domain],
         resourceTypes: ALL_RESOURCE_TYPES,
+      },
+    });
+
+    // Rule B: Allow subresources initiated by the whitelisted domain (excluding navigation frame types)
+    addRules.push({
+      id: RULE_ID.WHITELIST_START + index * 2 + 1,
+      priority: 2,
+      action: { type: 'allow' as chrome.declarativeNetRequest.RuleActionType },
+      condition: {
+        initiatorDomains: [entry.domain],
+        resourceTypes: ALL_RESOURCE_TYPES.filter(
+          (type) => type !== 'main_frame' && type !== 'sub_frame'
+        ),
       },
     });
   });
@@ -149,28 +174,39 @@ export async function verifyRulesIntegrity(
 ): Promise<boolean> {
   const dynamicRules = await chrome.declarativeNetRequest.getDynamicRules();
 
-  // Check that every whitelisted domain has a corresponding allow rule
-  const allowedDomains = new Set<string>();
+  // Check that every whitelisted domain has a corresponding allow rule for both requests and initiators
+  const allowedRequestDomains = new Set<string>();
+  const allowedInitiatorDomains = new Set<string>();
+
   for (const rule of dynamicRules) {
-    if (
-      rule.action.type === 'allow' &&
-      rule.condition.requestDomains
-    ) {
-      for (const domain of rule.condition.requestDomains) {
-        allowedDomains.add(domain);
+    if (rule.action.type === 'allow' && rule.id >= RULE_ID.WHITELIST_START) {
+      if (rule.condition.requestDomains) {
+        for (const domain of rule.condition.requestDomains) {
+          allowedRequestDomains.add(domain);
+        }
+      }
+      if (rule.condition.initiatorDomains) {
+        for (const domain of rule.condition.initiatorDomains) {
+          allowedInitiatorDomains.add(domain);
+        }
       }
     }
   }
 
   for (const entry of whitelist) {
-    if (!allowedDomains.has(entry.domain)) {
+    if (!allowedRequestDomains.has(entry.domain) || !allowedInitiatorDomains.has(entry.domain)) {
       return false;
     }
   }
 
   // Check that no unexpected domains are allowed
   const expectedDomains = new Set(whitelist.map((e) => e.domain));
-  for (const domain of allowedDomains) {
+  for (const domain of allowedRequestDomains) {
+    if (!expectedDomains.has(domain)) {
+      return false;
+    }
+  }
+  for (const domain of allowedInitiatorDomains) {
     if (!expectedDomains.has(domain)) {
       return false;
     }

@@ -248,7 +248,7 @@ export default function Options() {
   if (view === 'auth') {
     return (
       <div className="setup-page">
-        <div className="container container--narrow">
+        <main id="main-content" className="container container--narrow">
           <div className="animate-in text-center">
             <h2>🔒 LabLock Admin</h2>
             <p className="mt-2">Enter your master password to access settings.</p>
@@ -293,7 +293,7 @@ export default function Options() {
               Use Recovery Key
             </button>
           </div>
-        </div>
+        </main>
       </div>
     );
   }
@@ -302,7 +302,7 @@ export default function Options() {
   if (view === 'recovery') {
     return (
       <div className="setup-page">
-        <div className="container container--narrow">
+        <main id="main-content" className="container container--narrow">
           <div className="animate-in">
             <h2>Account Recovery</h2>
             <p className="mt-2">
@@ -371,7 +371,7 @@ export default function Options() {
               Back to Login
             </button>
           </div>
-        </div>
+        </main>
       </div>
     );
   }
@@ -379,7 +379,7 @@ export default function Options() {
   /* ─── Dashboard View ─── */
   return (
     <div className="setup-page">
-      <div className="container">
+      <main id="main-content" className="container">
         <div className="animate-in">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h1>LabLock Admin</h1>
@@ -582,7 +582,7 @@ export default function Options() {
             )}
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

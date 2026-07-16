@@ -42,22 +42,22 @@ export default function Popup() {
 
   if (loading) {
     return (
-      <div className="popup">
+      <main id="main-content" className="popup">
         <div className="text-center text-muted">Loading...</div>
-      </div>
+      </main>
     );
   }
 
   if (!status) {
     return (
-      <div className="popup">
+      <main id="main-content" className="popup">
         <div className="alert alert--error">Failed to load extension status.</div>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className="popup">
+    <main id="main-content" className="popup">
       <div className="popup-header">
         <span className="popup-title">LabLock</span>
         <span
@@ -106,6 +106,6 @@ export default function Popup() {
       >
         LabLock v1.0.0
       </p>
-    </div>
+    </main>
   );
 }
