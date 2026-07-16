@@ -1,12 +1,12 @@
 #Requires -RunAsAdministrator
-# Strict mode
-Set-StrictMode -Version Latest
-$ErrorActionPreference = "Stop"
-
 param(
     [Parameter(Mandatory=$true)]
     [string]$ExtensionId
 )
+
+# Strict mode
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
 
 try {
     Write-Output "[INFO] Starting Chrome Web Store extension force-installation..."
