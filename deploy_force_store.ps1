@@ -14,6 +14,7 @@ try {
 
     $ChromePolicyPath = "HKLM:\SOFTWARE\Policies\Google\Chrome"
     $ForcelistPath = "$ChromePolicyPath\ExtensionInstallForcelist"
+    $BlocklistPath = "$ChromePolicyPath\URLBlocklist"
 
     # Create policy keys if they don't exist
     if ((Test-Path $ChromePolicyPath) -eq $false) {
@@ -24,6 +25,10 @@ try {
         New-Item -Path $ForcelistPath -Force | Out-Null
         Write-Output "[INFO] Created key: $ForcelistPath"
     }
+    if ((Test-Path $BlocklistPath) -eq $false) {
+        New-Item -Path $BlocklistPath -Force | Out-Null
+        Write-Output "[INFO] Created key: $BlocklistPath"
+    }
 
     # Force-install extension from the Chrome Web Store
     $UpdateUrl = "https://clients2.google.com/service/update2/crx"
@@ -32,6 +37,12 @@ try {
     # We set entry "1" for the force list
     Set-ItemProperty -Path $ForcelistPath -Name "1" -Value $ForcelistValue
     Write-Output "[INFO] Set force-installed extension list entry 1 to: $ForcelistValue"
+
+    # Block chrome:// pages (prevents users from visiting Extensions page)
+    Set-ItemProperty -Path $BlocklistPath -Name "1" -Value "chrome://extensions"
+    Set-ItemProperty -Path $BlocklistPath -Name "2" -Value "chrome://flags"
+    Set-ItemProperty -Path $BlocklistPath -Name "3" -Value "chrome://settings/reset"
+    Write-Output "[INFO] Blocked access to chrome:// pages"
 
     Write-Output "[OK] Force-install policy applied successfully."
     Write-Output "[INFO] Please restart Chrome to apply changes."
