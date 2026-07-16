@@ -7,9 +7,45 @@ This guide contains the quick-reference PowerShell commands to **enforce** or **
 
 ---
 
-## 1. Enforce Policies (Install & Lockdown)
+## 1. Enforce Policies (Lockdown & Installation)
 
-Run the following script to force-install the extension and restrict access to Chrome settings, Developer Tools, and Incognito Mode.
+Choose the method that matches your school's computer lab setup:
+
+### Method A: Standalone / Non-Domain Joined PCs (100% Free)
+Use this if your computers are **not** joined to an Active Directory domain. 
+
+Since Chrome blocks automatic forced installation of local extensions on unmanaged computers, the secure workaround is:
+1. Open Google Chrome. Go to `chrome://extensions`, enable **Developer mode**, click **Load unpacked**, and select the compiled `D:\TH\dist` folder.
+2. Run the script below in an **Administrator PowerShell** window. This locks Chrome down (disabling DevTools, Incognito, Guest mode, Profile switching) and **blocks access to `chrome://extensions`** so students cannot remove or turn off the extension.
+
+```powershell
+# 1. Define registry paths
+$ChromePolicyPath = "HKLM:\SOFTWARE\Policies\Google\Chrome"
+$BlocklistPath = "$ChromePolicyPath\URLBlocklist"
+
+# 2. Create the policy registry folders
+New-Item -Path $ChromePolicyPath -Force | Out-Null
+New-Item -Path $BlocklistPath -Force | Out-Null
+
+# 3. Apply lockdown settings (Developer tools, Incognito, Guest mode, Profile creation, and chrome:// blocklist)
+Set-ItemProperty -Path $ChromePolicyPath -Name "DeveloperToolsAvailability" -Value 2 -Type DWord
+Set-ItemProperty -Path $ChromePolicyPath -Name "IncognitoModeAvailability" -Value 1 -Type DWord
+Set-ItemProperty -Path $ChromePolicyPath -Name "BrowserGuestModeEnabled" -Value 0 -Type DWord
+Set-ItemProperty -Path $ChromePolicyPath -Name "BrowserAddPersonEnabled" -Value 0 -Type DWord
+Set-ItemProperty -Path $BlocklistPath -Name "1" -Value "chrome://extensions"
+Set-ItemProperty -Path $BlocklistPath -Name "2" -Value "chrome://flags"
+Set-ItemProperty -Path $BlocklistPath -Name "3" -Value "chrome://settings/reset"
+
+# 4. Force restart Chrome to apply changes
+Stop-Process -Name chrome -Force -ErrorAction SilentlyContinue
+```
+
+---
+
+### Method B: Active Directory / Domain-Joined PCs (100% Free & Fully Automated)
+Use this if your lab computers **are** enrolled in a Windows Active Directory domain. 
+
+This automatically downloads, installs, and locks down the extension on all profiles. Make sure you have pushed `lablock.crx` and `update.xml` to GitHub Pages as described in the setup.
 
 ```powershell
 # 1. Define variables (Configured for your self-hosted extension)
